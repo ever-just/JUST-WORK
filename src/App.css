@@ -1,0 +1,215 @@
+/* Global styles */
+:root {
+  --primary-color: #3b82f6;
+  --secondary-color: #f3f4f6;
+  --text-color: #333;
+  --light-text: #6b7280;
+  --border-color: #e5e7eb;
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --header-bg: #fff;
+  --card-bg: #fff;
+  --badge-bg: #e0f2fe;
+  --badge-text: #0284c7;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9fafb;
+  color: var(--text-color);
+}
+
+.app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Header styles */
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.header p {
+  font-size: 1.25rem;
+  color: var(--light-text);
+  margin-top: 0;
+}
+
+/* Search and filter styles */
+.search-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  align-items: center;
+}
+
+.search-bar {
+  flex: 1;
+  min-width: 300px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.filter-container {
+  min-width: 200px;
+}
+
+.industry-select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  background-color: white;
+  cursor: pointer;
+  outline: none;
+}
+
+.results-count {
+  color: var(--light-text);
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+/* Company grid styles */
+.company-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+/* Company card styles */
+.company-card {
+  background-color: var(--card-bg);
+  border-radius: 0.5rem;
+  box-shadow: var(--card-shadow);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.company-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.company-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.company-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-color);
+}
+
+.hq-badge {
+  background-color: var(--badge-bg);
+  color: var(--badge-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.company-industry {
+  color: var(--light-text);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.company-details {
+  margin-bottom: 1rem;
+}
+
+.detail-item {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.company-description {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--light-text);
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.view-details {
+  margin-top: auto;
+  text-align: right;
+}
+
+.view-details-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.view-details-link:hover {
+  text-decoration: underline;
+}
+
+/* Loading and no results states */
+.loading-container, .no-results {
+  text-align: center;
+  padding: 3rem;
+  color: var(--light-text);
+  font-size: 1.125rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .app {
+    padding: 1rem;
+  }
+  
+  .company-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+  }
+  
+  .header p {
+    font-size: 1rem;
+  }
+}
