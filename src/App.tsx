@@ -15,23 +15,29 @@ interface HomePageProps {
   loadingMore: boolean;
   hasMore: boolean;
   totalCompanies: number;
+  searchQuery: string;
+  selectedIndustry: string;
   handleSearch: (query: string) => void;
   handleIndustryChange: (industry: string) => void;
+  handleClearFilters: () => void;
 }
 
-function HomePage({ filteredCompanies, industries, loading, loadingMore, hasMore, totalCompanies, handleSearch, handleIndustryChange }: HomePageProps) {
+function HomePage({ filteredCompanies, industries, loading, loadingMore, hasMore, totalCompanies, searchQuery, selectedIndustry, handleSearch, handleIndustryChange, handleClearFilters }: HomePageProps) {
   return (
     <>
-      <header className="header">
-        <h1>JUST-WORK</h1>
-      </header>
+                  <header className="header">
+              <h1>JUST WORK</h1>
+            </header>
       
       <main className="main-content">
         <SearchBar 
           onSearch={handleSearch}
           onIndustryChange={handleIndustryChange}
+          onClearFilters={handleClearFilters}
           industries={industries}
           totalCompanies={totalCompanies}
+          searchQuery={searchQuery}
+          selectedIndustry={selectedIndustry}
         />
         
         <CompanyGrid 
@@ -209,16 +215,27 @@ function App() {
 
   const handleIndustryChange = (industry: string) => {
     setSelectedIndustry(industry);
+    setCurrentPage(1);
+    setHasMore(true);
+    fetchCompanies(1, true);
+  };
+
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setSelectedIndustry('');
+    setCurrentPage(1);
+    setHasMore(true);
+    fetchCompanies(1, true);
   };
 
   return (
     <div className="app">
       <Router>
         <Routes>
-          <Route 
-            path="/" 
+                    <Route
+            path="/"
             element={
-              <HomePage 
+              <HomePage
                 companies={companies}
                 filteredCompanies={filteredCompanies}
                 industries={industries}
@@ -226,10 +243,13 @@ function App() {
                 loadingMore={loadingMore}
                 hasMore={hasMore}
                 totalCompanies={totalCompanies}
+                searchQuery={searchQuery}
+                selectedIndustry={selectedIndustry}
                 handleSearch={handleSearch}
                 handleIndustryChange={handleIndustryChange}
+                handleClearFilters={handleClearFilters}
               />
-            } 
+            }
           />
           <Route 
             path="/company/:id" 

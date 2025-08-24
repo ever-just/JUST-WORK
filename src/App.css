@@ -87,6 +87,83 @@ body {
   background-color: white;
   cursor: pointer;
   outline: none;
+  transition: all 0.2s ease;
+}
+
+.industry-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.industry-select.active {
+  border-color: var(--primary-color);
+  background-color: #eff6ff;
+  font-weight: 500;
+}
+
+/* Active Filters Styles */
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.active-filters-label {
+  font-size: 0.875rem;
+  color: var(--light-text);
+  font-weight: 500;
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.filter-remove {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.125rem;
+  border-radius: 0.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.filter-remove:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.clear-all-filters {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.clear-all-filters:hover {
+  background-color: #dc2626;
 }
 
 .results-count {
@@ -261,5 +338,24 @@ body {
   
   .header p {
     font-size: 1rem;
+  }
+
+  .search-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .active-filters {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .active-filters-label {
+    width: 100%;
+  }
+
+  .filter-tag {
+    font-size: 0.8rem;
   }
 }
