@@ -4,8 +4,34 @@
   padding: 2rem;
 }
 
-.back-button-container {
+/* Header Styles */
+.header {
   margin-bottom: 2rem;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.header-content h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+  flex: 1;
+}
+
+.header-badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.back-button {
+  flex-shrink: 0;
 }
 
 .back-button {
@@ -263,17 +289,182 @@
   font-style: italic;
 }
 
+/* Website Container Styles */
+.website-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.website-url {
+  color: #3b82f6;
+  font-size: 0.875rem;
+  word-break: break-all;
+  flex: 1;
+}
+
+.website-button {
+  flex-shrink: 0;
+  padding: 0.25rem;
+  height: auto;
+  min-height: 2rem;
+}
+
+/* Clickable Contact Cards */
+.contact-card.clickable {
+  cursor: pointer;
+  position: relative;
+}
+
+.contact-card.clickable:hover {
+  background-color: #f3f4f6;
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.contact-action-hint {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-align: center;
+  margin-top: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.contact-card.clickable:hover .contact-action-hint {
+  opacity: 1;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.modal-close {
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0.25rem 0.5rem;
+  min-height: auto;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.contact-details {
+  text-align: center;
+}
+
+.modal-contact-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.modal-contact-title {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0 0 0.25rem 0;
+}
+
+.modal-company-name {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  margin: 0 0 1.5rem 0;
+}
+
+.contact-availability {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+}
+
+.availability-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.availability-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #6b7280;
+}
+
+.modal-actions {
+  margin-top: 1.5rem;
+}
+
+.linkedin-button {
+  width: 100%;
+  background-color: #0077b5;
+  border-color: #0077b5;
+  color: white;
+}
+
+.linkedin-button:hover {
+  background-color: #005885;
+  border-color: #005885;
+}
+
 @media (max-width: 768px) {
   .detail-page {
     padding: 1rem;
   }
   
-  .info-sections {
-    grid-template-columns: 1fr;
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
   
-  .company-name {
+  .header-content h1 {
     font-size: 1.5rem;
+  }
+  
+  .info-sections {
+    grid-template-columns: 1fr;
   }
   
   .info-grid {
@@ -282,5 +473,16 @@
   
   .contacts-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .website-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .modal-content {
+    margin: 1rem;
+    max-width: calc(100vw - 2rem);
   }
 }

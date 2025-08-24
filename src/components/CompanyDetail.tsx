@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Company, Contact } from '../lib/types';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, User, Mail, Phone } from 'lucide-react';
+import { ArrowLeft, User, Mail, Phone, ExternalLink, Linkedin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import './CompanyDetail.css';
 
@@ -14,6 +14,8 @@ const CompanyDetail = ({ company }: CompanyDetailProps) => {
   const [contactsLoading, setContactsLoading] = useState<boolean>(true);
   const [contactsError, setContactsError] = useState<string>('');
   const [totalContacts, setTotalContacts] = useState<number>(0);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -42,28 +44,39 @@ const CompanyDetail = ({ company }: CompanyDetailProps) => {
 
     fetchContacts();
   }, [company.name]);
+
+  const openContactModal = (contact: Contact) => {
+    setSelectedContact(contact);
+    setIsModalOpen(true);
+  };
+
+  const closeContactModal = () => {
+    setSelectedContact(null);
+    setIsModalOpen(false);
+  };
+
+  const getLinkedInSearchUrl = (contact: Contact) => {
+    const query = `${contact.firstName} ${contact.lastName} ${company.name}`;
+    return `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(query)}`;
+  };
   return (
     <div className="detail-page">
       <header className="header">
-        <h1>Local Companies Catalog</h1>
-      </header>
-
-      <div className="back-button-container">
-        <Button asChild variant="outline" size="icon">
-          <Link to="/" aria-label="Back to Catalog">
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-        </Button>
-      </div>
-
-      <div className="detail-container">
-        <div className="company-header">
-          <h2 className="company-name">{company.name}</h2>
-          <div className="badges">
+        <div className="header-content">
+          <Button asChild variant="outline" size="icon" className="back-button">
+            <Link to="/" aria-label="Back to Catalog">
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+          </Button>
+          <h1>{company.name}</h1>
+          <div className="header-badges">
             {company.isHeadquarters && <span className="badge headquarters-badge">Headquarters</span>}
             {company.ownership && <span className="badge ownership-badge">{company.ownership}</span>}
           </div>
         </div>
+      </header>
+
+      <div className="detail-container">
 
         <div className="info-sections">
           <div className="info-section">
@@ -82,12 +95,9 @@ const CompanyDetail = ({ company }: CompanyDetailProps) => {
                 </>
               )}
               
-              <div className="info-label">Employees (Site):</div>
-              <div className="info-value">{company.employeesSite || 'N/A'}</div>
-              
-              <div className="info-label">Employees (Total):</div>
-              <div className="info-value">{company.employees || 'N/A'}</div>
-              
+                            <div className="info-label">Employees:</div>
+              <div className="info-value">{company.employees || company.employeesSite || 'N/A'}</div>
+
               <div className="info-label">Annual Sales:</div>
               <div className="info-value">{company.sales || 'N/A'}</div>
             </div>
@@ -114,9 +124,19 @@ const CompanyDetail = ({ company }: CompanyDetailProps) => {
               <div className="info-label">Website:</div>
               <div className="info-value">
                 {company.url ? (
-                  <a href={company.url} target="_blank" rel="noopener noreferrer" className="website-link">
-                    Visit Website
-                  </a>
+                  <div className="website-container">
+                    <span className="website-url">{company.url}</span>
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="website-button"
+                    >
+                      <a href={company.url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    </Button>
+                  </div>
                 ) : (
                   'N/A'
                 )}
@@ -149,7 +169,11 @@ const CompanyDetail = ({ company }: CompanyDetailProps) => {
           ) : contacts.length > 0 ? (
             <div className="contacts-grid">
               {contacts.map((contact, index) => (
-                <div key={index} className="contact-card">
+                <div 
+                  key={index} 
+                  className="contact-card clickable"
+                  onClick={() => openContactModal(contact)}
+                >
                   <div className="contact-header">
                     <h4 className="contact-name">
                       {contact.firstName} {contact.lastName}
@@ -160,6 +184,7 @@ const CompanyDetail = ({ company }: CompanyDetailProps) => {
                     </div>
                   </div>
                   <p className="contact-title">{contact.title}</p>
+                  <div className="contact-action-hint">Click for more info</div>
                 </div>
               ))}
             </div>
@@ -184,6 +209,63 @@ const CompanyDetail = ({ company }: CompanyDetailProps) => {
           </div>
         </div>
       </div>
+
+      {/* Contact Modal */}
+      {isModalOpen && selectedContact && (
+        <div className="modal-overlay" onClick={closeContactModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Contact Details</h3>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={closeContactModal}
+                className="modal-close"
+              >
+                ×
+              </Button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="contact-details">
+                <h4 className="modal-contact-name">
+                  {selectedContact.firstName} {selectedContact.lastName}
+                </h4>
+                <p className="modal-contact-title">{selectedContact.title}</p>
+                <p className="modal-company-name">at {company.name}</p>
+                
+                <div className="contact-availability">
+                  <div className="availability-item">
+                    <Mail className="availability-icon" />
+                    <span>{selectedContact.hasEmail ? 'Email available' : 'No email on file'}</span>
+                  </div>
+                  <div className="availability-item">
+                    <Phone className="availability-icon" />
+                    <span>{selectedContact.hasPhone ? 'Phone available' : 'No phone on file'}</span>
+                  </div>
+                </div>
+
+                <div className="modal-actions">
+                  <Button
+                    asChild
+                    variant="default"
+                    className="linkedin-button"
+                  >
+                    <a 
+                      href={getLinkedInSearchUrl(selectedContact)} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      <Linkedin className="h-4 w-4 mr-2" />
+                      Find on LinkedIn
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
