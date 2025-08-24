@@ -1,6 +1,7 @@
-import { Company } from '../lib/types';
+import { useState, useEffect } from 'react';
+import { Company, Contact } from '../lib/types';
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, User, Mail, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import './CompanyDetail.css';
 
@@ -9,6 +10,38 @@ interface CompanyDetailProps {
 }
 
 const CompanyDetail = ({ company }: CompanyDetailProps) => {
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [contactsLoading, setContactsLoading] = useState<boolean>(true);
+  const [contactsError, setContactsError] = useState<string>('');
+  const [totalContacts, setTotalContacts] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        setContactsLoading(true);
+        setContactsError('');
+        
+        const response = await fetch(`/api/companies/${encodeURIComponent(company.name)}/contacts`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setContacts(data.contacts || []);
+        setTotalContacts(data.totalContacts || 0);
+        
+      } catch (error) {
+        console.error('Error fetching contacts:', error);
+        setContactsError('Failed to load contacts');
+        setContacts([]);
+        setTotalContacts(0);
+      } finally {
+        setContactsLoading(false);
+      }
+    };
+
+    fetchContacts();
+  }, [company.name]);
   return (
     <div className="detail-page">
       <header className="header">
@@ -95,6 +128,46 @@ const CompanyDetail = ({ company }: CompanyDetailProps) => {
         <div className="description-section">
           <h3>Business Description</h3>
           <p className="full-description">{company.description || 'No description available.'}</p>
+        </div>
+
+        <div className="contacts-section">
+          <h3>
+            <User className="section-icon" />
+            Contact Information
+            {totalContacts > 0 && <span className="contact-count">({totalContacts})</span>}
+          </h3>
+          
+          {contactsLoading ? (
+            <div className="contacts-loading">
+              <div className="spinner-small"></div>
+              <span>Loading contacts...</span>
+            </div>
+          ) : contactsError ? (
+            <div className="contacts-error">
+              <p>{contactsError}</p>
+            </div>
+          ) : contacts.length > 0 ? (
+            <div className="contacts-grid">
+              {contacts.map((contact, index) => (
+                <div key={index} className="contact-card">
+                  <div className="contact-header">
+                    <h4 className="contact-name">
+                      {contact.firstName} {contact.lastName}
+                    </h4>
+                    <div className="contact-indicators">
+                      {contact.hasEmail && <Mail className="contact-icon email-icon" />}
+                      {contact.hasPhone && <Phone className="contact-icon phone-icon" />}
+                    </div>
+                  </div>
+                  <p className="contact-title">{contact.title}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="no-contacts">
+              <p>No contact information available for this company.</p>
+            </div>
+          )}
         </div>
 
         <div className="additional-section">

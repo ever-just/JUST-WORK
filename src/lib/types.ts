@@ -1,3 +1,11 @@
+export interface Contact {
+  firstName: string;
+  lastName: string;
+  title: string;
+  hasEmail: boolean;
+  hasPhone: boolean;
+}
+
 export interface Company {
   name: string;
   tradestyle: string;
@@ -18,6 +26,8 @@ export interface Company {
   ticker?: string;
   employeesSite?: string;
   sicDescription?: string;
+  contacts?: Contact[];
+  totalContacts?: number;
 }
 
 export interface IndustryOption {
