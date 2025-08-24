@@ -4,7 +4,7 @@ import SearchBar from './components/SearchBar';
 import CompanyGrid from './components/CompanyGrid';
 import CompanyDetail from './components/CompanyDetail';
 import { Company, IndustryOption } from './lib/types';
-import { parseCSVData, getUniqueIndustries, formatSales } from './lib/utils';
+// Removed unused CSV parsing imports - now using API
 import './App.css';
 
 interface HomePageProps {
@@ -12,15 +12,18 @@ interface HomePageProps {
   filteredCompanies: Company[];
   industries: IndustryOption[];
   loading: boolean;
+  loadingMore: boolean;
+  hasMore: boolean;
+  totalCompanies: number;
   handleSearch: (query: string) => void;
   handleIndustryChange: (industry: string) => void;
 }
 
-function HomePage({ filteredCompanies, industries, loading, handleSearch, handleIndustryChange }: HomePageProps) {
+function HomePage({ filteredCompanies, industries, loading, loadingMore, hasMore, totalCompanies, handleSearch, handleIndustryChange }: HomePageProps) {
   return (
     <>
       <header className="header">
-        <h1>MINNESOTA COMPANIES</h1>
+        <h1>JUST-WORK</h1>
       </header>
       
       <main className="main-content">
@@ -28,12 +31,15 @@ function HomePage({ filteredCompanies, industries, loading, handleSearch, handle
           onSearch={handleSearch}
           onIndustryChange={handleIndustryChange}
           industries={industries}
-          totalCompanies={filteredCompanies.length}
+          totalCompanies={totalCompanies}
         />
         
         <CompanyGrid 
           companies={filteredCompanies}
           loading={loading}
+          loadingMore={loadingMore}
+          hasMore={hasMore}
+          totalCompanies={totalCompanies}
         />
       </main>
     </>
@@ -60,65 +66,123 @@ function App() {
   const [filteredCompanies, setFilteredCompanies] = useState<Company[]>([]);
   const [industries, setIndustries] = useState<IndustryOption[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedIndustry, setSelectedIndustry] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [totalCompanies, setTotalCompanies] = useState<number>(0);
+
+  const fetchCompanies = async (page: number, reset: boolean = false) => {
+    try {
+      if (reset) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
+
+      // Build query parameters
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: '50',
+      });
+      
+      if (searchQuery) {
+        params.append('search', searchQuery);
+      }
+      
+      if (selectedIndustry) {
+        params.append('industry', selectedIndustry);
+      }
+
+      const response = await fetch(`/api/companies?${params}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const newCompanies = data.companies || [];
+      
+      if (reset) {
+        setCompanies(newCompanies);
+        setFilteredCompanies(newCompanies);
+      } else {
+        setCompanies(prev => [...prev, ...newCompanies]);
+        setFilteredCompanies(prev => [...prev, ...newCompanies]);
+      }
+      
+      setTotalCompanies(data.pagination?.total || 0);
+      setHasMore(page < (data.pagination?.pages || 1));
+      
+    } catch (error) {
+      console.error('Error fetching companies:', error);
+      if (reset) {
+        setCompanies([]);
+        setFilteredCompanies([]);
+      }
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  const loadMoreCompanies = () => {
+    if (!loadingMore && hasMore) {
+      const nextPage = currentPage + 1;
+      setCurrentPage(nextPage);
+      fetchCompanies(nextPage, false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchIndustries = async () => {
       try {
-        setLoading(true);
-        const response = await fetch('/ForMinnesotacompanies.org $10M + 10+ ppl + MN Only.csv');
-        const csvText = await response.text();
-        const parsedData = parseCSVData(csvText);
-        
-        // Filter out null values before mapping
-        const validData = parsedData.filter(item => item !== null);
-        
-        // Process and format the data with strict typing
-        const processedData: Company[] = validData
-          .filter(Boolean)
-          .map(company => ({
-            name: company.name || '',
-            address: company.address || '',
-            city: company.city || '',
-            state: company.state || '',
-            postalCode: company.postalCode || '',
-            sales: formatSales(company.sales || ''),
-            employees: company.employees || '',
-            description: company.description || '',
-            industry: company.industry || '',
-            isHeadquarters: Boolean(company.isHeadquarters),
-            naicsDescription: company.naicsDescription || '',
-            tradestyle: company.tradestyle || '',
-            phone: company.phone || '',
-            url: company.url || '',
-            rawSales: company.sales || '',
-            ownership: company.ownership || '',
-            ticker: company.ticker || '',
-            employeesSite: company.employeesSite || '',
-            sicDescription: company.sicDescription || ''
-          }));
-        
-        setCompanies(processedData);
-        setFilteredCompanies(processedData);
-        
-        // Extract unique industries for the filter dropdown
-        const uniqueIndustries = getUniqueIndustries(processedData);
-        const industryOptions = uniqueIndustries.map(industry => ({
-          value: industry,
-          label: industry
-        }));
-        
-        setIndustries(industryOptions);
-        setLoading(false);
+        const response = await fetch('/api/industries');
+        if (response.ok) {
+          const data = await response.json();
+          setIndustries(data || []);
+        }
       } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
+        console.error('Error fetching industries:', error);
       }
     };
     
-    fetchData();
+    fetchIndustries();
   }, []);
+
+  useEffect(() => {
+    // Reset and fetch when search or industry changes
+    setCurrentPage(1);
+    setHasMore(true);
+    fetchCompanies(1, true);
+  }, [searchQuery, selectedIndustry]);
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0];
+        if (target.isIntersecting && hasMore && !loadingMore && !loading) {
+          loadMoreCompanies();
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '100px'
+      }
+    );
+
+    const sentinel = document.getElementById('scroll-sentinel');
+    if (sentinel) {
+      observer.observe(sentinel);
+    }
+
+    return () => {
+      if (sentinel) {
+        observer.unobserve(sentinel);
+      }
+    };
+  }, [hasMore, loadingMore, loading, currentPage]);
 
   useEffect(() => {
     // Filter companies based on search query and selected industry
@@ -159,6 +223,9 @@ function App() {
                 filteredCompanies={filteredCompanies}
                 industries={industries}
                 loading={loading}
+                loadingMore={loadingMore}
+                hasMore={hasMore}
+                totalCompanies={totalCompanies}
                 handleSearch={handleSearch}
                 handleIndustryChange={handleIndustryChange}
               />

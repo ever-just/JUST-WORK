@@ -22,6 +22,9 @@ const dbConfig = {
   database: process.env.DB_NAME || 'justwork',
   password: process.env.DB_PASSWORD || 'password',
   port: process.env.DB_PORT || 5432,
+  ssl: process.env.DB_HOST && process.env.DB_HOST.includes('digitalocean.com') ? {
+    rejectUnauthorized: false
+  } : false
 };
 
 const pool = new Pool(dbConfig);
