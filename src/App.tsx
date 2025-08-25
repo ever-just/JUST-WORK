@@ -45,7 +45,7 @@ function HomePage({ filteredCompanies, industries, loading, loadingMore, hasMore
           loading={loading}
           loadingMore={loadingMore}
           hasMore={hasMore}
-          totalCompanies={filteredCompanies.length}
+          totalCompanies={totalCompanies}
         />
       </main>
     </>
