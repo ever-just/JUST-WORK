@@ -43,3 +43,12 @@ coverage/
 *.log
 *.tmp
 .temp/
+
+# Database scripts with sensitive data
+check-db.js
+scripts/cleanup-fake-urls.js
+scripts/main-url-automation.js
+scripts/real-url-finder.js
+scripts/url-finder-automation.js
+scripts/google-places-url-finder.js
+scripts/monitor-progress.js
