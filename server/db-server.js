@@ -13,7 +13,7 @@ const dbConfig = {
   user: process.env.DB_USER || 'doadmin',
   host: process.env.DB_HOST || 'just-work-db-do-user-24253030-0.f.db.ondigitalocean.com',
   database: process.env.DB_NAME || 'justwork',
-  password: process.env.DB_PASSWORD || 'REDACTED_PASSWORD',
+  password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT || 25060,
   ssl: { rejectUnauthorized: false }
 };

@@ -8,7 +8,7 @@ const dbConfig = {
   user: 'doadmin',
   host: 'just-work-db-do-user-24253030-0.f.db.ondigitalocean.com',
   database: 'justwork',
-  password: 'REDACTED_PASSWORD',
+  password: process.env.DB_PASSWORD,
   port: 25060,
   ssl: { rejectUnauthorized: false }
 };
