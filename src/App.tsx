@@ -87,11 +87,21 @@ function App() {
         setLoadingMore(true);
       }
 
-      // Build query parameters - no search/industry filters for API
+      // Build query parameters - include search/industry filters for server-side filtering
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '50',
       });
+
+      // Add search filter if present
+      if (searchQuery.trim()) {
+        params.append('search', searchQuery.trim());
+      }
+
+      // Add industry filter if present
+      if (selectedIndustry) {
+        params.append('industry', selectedIndustry);
+      }
 
       const response = await fetch(`/api/companies?${params}`);
       if (!response.ok) {
@@ -119,7 +129,7 @@ function App() {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, []);
+  }, [searchQuery, selectedIndustry]);
 
   const loadMoreCompanies = useCallback(() => {
     if (!loadingMore && hasMore) {
@@ -146,32 +156,26 @@ function App() {
   }, []);
 
   // Initial companies loading
+  // Initial data load
   useEffect(() => {
     fetchCompanies(1, true);
   }, []);
 
-  // Client-side filtering effect
+  // Reset pagination and reload data when filters change
   useEffect(() => {
-    let filtered = [...companies];
-    
-    // Apply search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(company => 
-        company.name.toLowerCase().includes(query) ||
-        company.description.toLowerCase().includes(query) ||
-        company.industry.toLowerCase().includes(query) ||
-        company.city.toLowerCase().includes(query)
-      );
+    // Skip initial render (when both are empty initially)
+    if (searchQuery !== '' || selectedIndustry !== '' || companies.length > 0) {
+      setCurrentPage(1);
+      setHasMore(true);
+      fetchCompanies(1, true);
     }
-    
-    // Apply industry filter
-    if (selectedIndustry) {
-      filtered = filtered.filter(company => company.industry === selectedIndustry);
-    }
-    
-    setFilteredCompanies(filtered);
-  }, [companies, searchQuery, selectedIndustry]);
+  }, [searchQuery, selectedIndustry, fetchCompanies]);
+
+  // Client-side filtering effect
+  // Since we're using server-side filtering, filteredCompanies is just companies
+  useEffect(() => {
+    setFilteredCompanies(companies);
+  }, [companies]);
 
   // Intersection Observer for infinite scroll - only set up after initial data is loaded
   useEffect(() => {
