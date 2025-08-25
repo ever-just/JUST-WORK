@@ -216,31 +216,6 @@ app.get('/api/companies', async (req, res) => {
         industry
       }
     });
-    
-    // Apply industry filter
-    if (industry) {
-      filteredCompanies = filteredCompanies.filter(company => 
-        company.industry.toLowerCase().includes(industry.toLowerCase())
-      );
-    }
-    
-    const total = filteredCompanies.length;
-    const companyOffset = (page - 1) * limit;
-    const paginatedCompanies = filteredCompanies.slice(companyOffset, companyOffset + parseInt(limit));
-    
-    res.json({
-      companies: paginatedCompanies,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        totalPages: Math.ceil(total / limit)
-      },
-      filters: {
-        search,
-        industry
-      }
-    });
 
   } catch (error) {
     console.error('Error fetching companies:', error);
@@ -257,14 +232,35 @@ app.get('/api/companies/:name', async (req, res) => {
     const { name } = req.params;
     const decodedName = decodeURIComponent(name);
     
-    // Find company in real data
-    const company = companiesData.find(c => c.name === decodedName);
+    // Find company in database
+    const result = await pool.query('SELECT * FROM companies WHERE company_name = $1', [decodedName]);
     
-    if (!company) {
+    if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Company not found' });
     }
     
-    res.json(company);
+    const company = result.rows[0];
+    const formattedCompany = {
+      name: company.company_name,
+      tradestyle: company.tradestyle || '',
+      address: company.address_line_1 || '',
+      city: company.city || '',
+      state: company.state || '',
+      postalCode: company.postal_code || '',
+      phone: company.phone || '',
+      url: company.website || '',
+      sales: company.revenue_formatted || '',
+      employees: company.employees_total?.toString() || '',
+      description: company.business_description || '',
+      industry: company.industry || '',
+      isHeadquarters: company.is_headquarters || false,
+      ownership: company.ownership_type || '',
+      entity_type: company.entity_type || '',
+      revenue_numeric: company.revenue_numeric || 0,
+      employeesSite: company.employees_single_site?.toString() || ''
+    };
+    
+    res.json(formattedCompany);
 
   } catch (error) {
     console.error('Error fetching company:', error);
@@ -278,8 +274,14 @@ app.get('/api/companies/:name', async (req, res) => {
 // Get unique industries for filter dropdown
 app.get('/api/industries', async (req, res) => {
   try {
-    // Return real industries
-    res.json(industriesData);
+    // Get unique industries from database
+    const result = await pool.query('SELECT DISTINCT industry FROM companies WHERE industry IS NOT NULL AND industry != \'\' ORDER BY industry');
+    const industries = result.rows.map(row => ({
+      value: row.industry,
+      label: row.industry
+    }));
+    
+    res.json(industries);
 
   } catch (error) {
     console.error('Error fetching industries:', error);
@@ -293,14 +295,23 @@ app.get('/api/industries', async (req, res) => {
 // Get database statistics
 app.get('/api/stats', async (req, res) => {
   try {
-    // Calculate stats from real data
+    // Calculate stats from database
+    const [companiesResult, contactsResult, industriesResult, headquartersResult, revenueResult, employeesResult] = await Promise.all([
+      pool.query('SELECT COUNT(*) FROM companies'),
+      pool.query('SELECT COUNT(*) FROM contacts'),
+      pool.query('SELECT COUNT(DISTINCT industry) FROM companies WHERE industry IS NOT NULL AND industry != \'\''),
+      pool.query('SELECT COUNT(*) FROM companies WHERE is_headquarters = true'),
+      pool.query('SELECT AVG(revenue_numeric) FROM companies WHERE revenue_numeric > 0'),
+      pool.query('SELECT AVG(employees_total) FROM companies WHERE employees_total > 0')
+    ]);
+
     const stats = {
-      totalCompanies: companiesData.length,
-      totalContacts: contactsData.length,
-      totalIndustries: industriesData.length,
-      headquartersCount: companiesData.filter(c => c.isHeadquarters).length,
-      averageRevenue: companiesData.reduce((sum, c) => sum + (c.revenue_numeric || 0), 0) / companiesData.length,
-      averageEmployees: companiesData.reduce((sum, c) => sum + (parseInt(c.employees) || 0), 0) / companiesData.length
+      totalCompanies: parseInt(companiesResult.rows[0].count),
+      totalContacts: parseInt(contactsResult.rows[0].count),
+      totalIndustries: parseInt(industriesResult.rows[0].count),
+      headquartersCount: parseInt(headquartersResult.rows[0].count),
+      averageRevenue: parseFloat(revenueResult.rows[0].avg) || 0,
+      averageEmployees: parseFloat(employeesResult.rows[0].avg) || 0
     };
 
     res.json(stats);
