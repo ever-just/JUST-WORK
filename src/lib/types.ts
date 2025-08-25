@@ -15,6 +15,7 @@ export interface Company {
   postalCode: string;
   phone: string;
   url: string;
+  favicon_url?: string;
   sales: string;
   employees: string;
   description: string;

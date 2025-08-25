@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { SitemapPage, SitemapResponse } from '../lib/types';
+import { SitemapResponse } from '../lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -199,7 +199,7 @@ const CompanySitemap = ({ companyName, companyUrl }: CompanySitemapProps) => {
             </div>
 
             <div className="grid gap-3">
-              {displayedPages.map((page, index) => (
+              {displayedPages.map((page) => (
                 <div
                   key={page.url}
                   className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"

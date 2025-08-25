@@ -1,15 +1,46 @@
 import { Company } from '../lib/types';
+import { useState } from 'react';
 
 interface CompanyCardProps {
   company: Company;
 }
 
 const CompanyCard = ({ company }: CompanyCardProps) => {
+  const [logoError, setLogoError] = useState(false);
+  const [logoLoading, setLogoLoading] = useState(true);
+
+  const handleLogoError = () => {
+    setLogoError(true);
+    setLogoLoading(false);
+  };
+
+  const handleLogoLoad = () => {
+    setLogoLoading(false);
+  };
+
   return (
     <div className="company-card">
       <div className="company-header">
-        <h2 className="company-name">{company.name}</h2>
-        {company.isHeadquarters && <span className="hq-badge">HQ</span>}
+        <div className="company-logo-container">
+          {company.favicon_url && !logoError ? (
+            <img 
+              src={company.favicon_url}
+              alt={`${company.name} logo`}
+              className="company-logo"
+              onError={handleLogoError}
+              onLoad={handleLogoLoad}
+              style={{ display: logoLoading ? 'none' : 'block' }}
+            />
+          ) : (
+            <div className="company-logo-fallback">
+              {company.name.charAt(0).toUpperCase()}
+            </div>
+          )}
+        </div>
+        <div className="company-title-section">
+          <h2 className="company-name">{company.name}</h2>
+          {company.isHeadquarters && <span className="hq-badge">HQ</span>}
+        </div>
       </div>
       <div className="company-industry">{company.industry}</div>
       <div className="company-details">

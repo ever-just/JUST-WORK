@@ -174,6 +174,7 @@ app.get('/api/companies', async (req, res) => {
       postalCode: company.postal_code || '',
       phone: company.phone || '',
       url: company.website || '',
+      favicon_url: company.favicon_url || '',
       sales: company.revenue_formatted || '',
       employees: company.employees_total?.toString() || '',
       description: company.business_description || '',
