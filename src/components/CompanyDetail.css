@@ -16,6 +16,24 @@
   flex-wrap: wrap;
 }
 
+.company-header-main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.company-title-info {
+  flex: 1;
+}
+
+.company-title-info h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
 .header-content h1 {
   font-size: 2rem;
   font-weight: 700;

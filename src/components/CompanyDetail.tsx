@@ -17,6 +17,17 @@ const CompanyDetail = ({ company }: CompanyDetailProps) => {
   const [totalContacts, setTotalContacts] = useState<number>(0);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [logoError, setLogoError] = useState(false);
+  const [logoLoading, setLogoLoading] = useState(true);
+
+  const handleLogoError = () => {
+    setLogoError(true);
+    setLogoLoading(false);
+  };
+
+  const handleLogoLoad = () => {
+    setLogoLoading(false);
+  };
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -69,10 +80,30 @@ const CompanyDetail = ({ company }: CompanyDetailProps) => {
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
-          <h1>{company.name}</h1>
-          <div className="header-badges">
-            {company.isHeadquarters && <span className="badge headquarters-badge">Headquarters</span>}
-            {company.ownership && <span className="badge ownership-badge">{company.ownership}</span>}
+          <div className="company-header-main">
+            <div className="company-logo-container-large">
+              {company.favicon_url && !logoError ? (
+                <img 
+                  src={company.favicon_url}
+                  alt={`${company.name} logo`}
+                  className="company-logo-large"
+                  onError={handleLogoError}
+                  onLoad={handleLogoLoad}
+                  style={{ display: logoLoading ? 'none' : 'block' }}
+                />
+              ) : (
+                <div className="company-logo-fallback-large">
+                  {company.name.charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
+            <div className="company-title-info">
+              <h1>{company.name}</h1>
+              <div className="header-badges">
+                {company.isHeadquarters && <span className="badge headquarters-badge">Headquarters</span>}
+                {company.ownership && <span className="badge ownership-badge">{company.ownership}</span>}
+              </div>
+            </div>
           </div>
         </div>
       </header>
