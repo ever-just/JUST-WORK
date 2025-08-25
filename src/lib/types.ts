@@ -35,3 +35,20 @@ export interface IndustryOption {
   value: string;
   label: string;
 }
+
+export interface SitemapPage {
+  url: string;
+  title: string;
+  category: string;
+  relevanceScore: number;
+  lastmod?: string;
+  changefreq?: string;
+  priority?: number;
+}
+
+export interface SitemapResponse {
+  pages: SitemapPage[];
+  error?: string;
+  totalFound: number;
+  subdomainsChecked: number;
+}

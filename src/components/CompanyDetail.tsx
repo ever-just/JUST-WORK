@@ -3,6 +3,7 @@ import { Company, Contact } from '../lib/types';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, User, Mail, Phone, ExternalLink, Linkedin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import CompanySitemap from './CompanySitemap';
 import './CompanyDetail.css';
 
 interface CompanyDetailProps {
@@ -211,6 +212,13 @@ const CompanyDetail = ({ company }: CompanyDetailProps) => {
             <div className="info-label">Tradestyle:</div>
             <div className="info-value">{company.tradestyle || 'N/A'}</div>
           </div>
+        </div>
+
+        <div className="sitemap-section">
+          <CompanySitemap 
+            companyName={company.name} 
+            companyUrl={company.url} 
+          />
         </div>
       </div>
 

@@ -5,15 +5,17 @@
  * Serves company data from PostgreSQL database
  */
 
-import express from 'express';
-import cors from 'cors';
-import pg from 'pg';
-import dotenv from 'dotenv';
+const express = require('express');
+const cors = require('cors');
+const { Pool } = require('pg');
+const dotenv = require('dotenv');
+const SitemapService = require('./sitemap-service');
 
 // Load environment variables
 dotenv.config();
 
-const { Pool } = pg;
+// Initialize sitemap service
+const sitemapService = new SitemapService();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -373,17 +375,91 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
+// Get sitemap pages for a company
+app.get('/api/companies/:name/sitemap', async (req, res) => {
+  try {
+    const { name } = req.params;
+    const { limit = 10 } = req.query;
+    const decodedName = decodeURIComponent(name);
+    
+    // Get company details first
+    const companyResult = await pool.query('SELECT company_name, website FROM companies WHERE company_name = $1', [decodedName]);
+    
+    if (companyResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
+    
+    const company = companyResult.rows[0];
+    const companyUrl = company.website;
+    const companyName = company.company_name;
+    
+    if (!companyUrl) {
+      return res.json({ 
+        pages: [], 
+        error: 'No website URL available for this company',
+        totalFound: 0,
+        subdomainsChecked: 0
+      });
+    }
+    
+    // Get relevant sitemap pages
+    const result = await sitemapService.getRelevantPages(companyUrl, companyName, parseInt(limit));
+    
+    res.json(result);
+
+  } catch (error) {
+    console.error('Error fetching sitemap:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch sitemap',
+      message: error.message,
+      pages: [],
+      totalFound: 0,
+      subdomainsChecked: 0
+    });
+  }
+});
+
+// Clear sitemap cache (useful for testing)
+app.post('/api/sitemap/clear-cache', (req, res) => {
+  try {
+    sitemapService.clearCache();
+    res.json({ 
+      success: true, 
+      message: 'Sitemap cache cleared successfully' 
+    });
+  } catch (error) {
+    console.error('Error clearing cache:', error);
+    res.status(500).json({ 
+      error: 'Failed to clear cache',
+      message: error.message 
+    });
+  }
+});
+
+// Get sitemap cache statistics
+app.get('/api/sitemap/cache-stats', (req, res) => {
+  try {
+    const stats = sitemapService.getCacheStats();
+    res.json(stats);
+  } catch (error) {
+    console.error('Error getting cache stats:', error);
+    res.status(500).json({ 
+      error: 'Failed to get cache statistics',
+      message: error.message 
+    });
+  }
+});
+
 // Test database connection
 app.get('/api/db-test', async (req, res) => {
   try {
-    // For now, return mock connection status
+    // Test actual database connection
+    const result = await pool.query('SELECT COUNT(*) FROM companies');
     res.json({
-      status: 'csv_data_active',
+      status: 'database_connected',
       timestamp: new Date().toISOString(),
-      message: 'Using real data from cleaned CSV files',
-      companiesLoaded: companiesData.length,
-      contactsLoaded: contactsData.length,
-      industriesGenerated: industriesData.length
+      message: 'Connected to PostgreSQL database',
+      companiesCount: parseInt(result.rows[0].count)
     });
   } catch (error) {
     console.error('Database connection error:', error);

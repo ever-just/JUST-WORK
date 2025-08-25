@@ -139,12 +139,16 @@
   text-decoration: underline;
 }
 
-.description-section, .additional-section {
+.description-section, .additional-section, .sitemap-section {
   background-color: #fff;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
   margin-bottom: 2rem;
+}
+
+.sitemap-section {
+  padding: 0; /* Let the CompanySitemap component handle its own padding */
 }
 
 .description-section h3, .additional-section h3 {
