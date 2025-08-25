@@ -145,6 +145,11 @@ function App() {
     fetchIndustries();
   }, []);
 
+  // Initial companies loading
+  useEffect(() => {
+    fetchCompanies(1, true);
+  }, []);
+
   // Client-side filtering effect
   useEffect(() => {
     let filtered = [...companies];
