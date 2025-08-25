@@ -23,6 +23,11 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
         <div className="detail-item">
           <span className="detail-label">Sales:</span> {formatSales(company.sales || '')}
         </div>
+        {company.approxAnnualRevenue && (
+          <div className="detail-item">
+            <span className="detail-label">Approx Annual Revenue:</span> {company.approxAnnualRevenue}
+          </div>
+        )}
       </div>
       <div className="company-description">
         {company.description && company.description.length > 300 

@@ -180,7 +180,8 @@ app.get('/api/companies', async (req, res) => {
       ownership: company.ownership_type || '',
       entity_type: company.entity_type || '',
       revenue_numeric: company.revenue_numeric || 0,
-      employeesSite: company.employees_single_site?.toString() || ''
+      employeesSite: company.employees_single_site?.toString() || '',
+      approxAnnualRevenue: company.approx_annual_revenue || ''
     }));
 
     // Get total count for pagination
@@ -257,7 +258,8 @@ app.get('/api/companies/:name', async (req, res) => {
       ownership: company.ownership_type || '',
       entity_type: company.entity_type || '',
       revenue_numeric: company.revenue_numeric || 0,
-      employeesSite: company.employees_single_site?.toString() || ''
+      employeesSite: company.employees_single_site?.toString() || '',
+      approxAnnualRevenue: company.approx_annual_revenue || ''
     };
     
     res.json(formattedCompany);

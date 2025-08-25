@@ -28,6 +28,7 @@ export interface Company {
   sicDescription?: string;
   contacts?: Contact[];
   totalContacts?: number;
+  approxAnnualRevenue?: string;
 }
 
 export interface IndustryOption {

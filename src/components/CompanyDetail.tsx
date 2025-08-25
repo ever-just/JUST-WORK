@@ -100,6 +100,13 @@ const CompanyDetail = ({ company }: CompanyDetailProps) => {
 
               <div className="info-label">Annual Sales:</div>
               <div className="info-value">{company.sales || 'N/A'}</div>
+
+              {company.approxAnnualRevenue && (
+                <>
+                  <div className="info-label">Approx Annual Revenue:</div>
+                  <div className="info-value">{company.approxAnnualRevenue}</div>
+                </>
+              )}
             </div>
           </div>
 
