@@ -1,11 +1,12 @@
 import { Company } from '../lib/types';
+import { memo } from 'react';
 import { useState } from 'react';
 
 interface CompanyCardProps {
   company: Company;
 }
 
-const CompanyCard = ({ company }: CompanyCardProps) => {
+const CompanyCard = memo(({ company }: CompanyCardProps) => {
   const [logoError, setLogoError] = useState(false);
   const [logoLoading, setLogoLoading] = useState(true);
 
@@ -66,6 +67,6 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
       </div>
     </div>
   );
-};
+});
 
 export default CompanyCard;

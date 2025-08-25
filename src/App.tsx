@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
 import SearchBar from './components/SearchBar';
 import CompanyGrid from './components/CompanyGrid';
@@ -90,7 +90,7 @@ function App() {
       // Build query parameters - include search/industry filters for server-side filtering
       const params = new URLSearchParams({
         page: page.toString(),
-        limit: '50',
+        limit: '200',
       });
 
       // Add search filter if present
@@ -177,39 +177,66 @@ function App() {
     setFilteredCompanies(companies);
   }, [companies]);
 
-  // Intersection Observer for infinite scroll - only set up after initial data is loaded
+  // Stable refs for IntersectionObserver to prevent recreation issues
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef(loadMoreCompanies);
+  const stateRef = useRef({ hasMore, loadingMore, loading });
+
+  // Keep refs current
+  loadMoreRef.current = loadMoreCompanies;
+  stateRef.current = { hasMore, loadingMore, loading };
+
+  // Stable intersection callback that doesn't cause observer recreation
+  const stableIntersectionCallback = useCallback((entries: IntersectionObserverEntry[]) => {
+    const target = entries[0];
+    const { hasMore: currentHasMore, loadingMore: currentLoadingMore, loading: currentLoading } = stateRef.current;
+    
+    if (target.isIntersecting && currentHasMore && !currentLoadingMore && !currentLoading) {
+      loadMoreRef.current();
+    }
+  }, []); // No dependencies - completely stable!
+
+  // Intersection Observer setup - only recreates when absolutely necessary
   useEffect(() => {
-    // Don't set up observer until we have initial data and are not loading
-    if (loading || companies.length === 0) {
+    // Don't set up observer until we have initial data
+    if (companies.length === 0) {
       return;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const target = entries[0];
-        if (target.isIntersecting && hasMore && !loadingMore && !loading) {
-          loadMoreCompanies();
+    // Create observer only once
+    if (!observerRef.current) {
+      observerRef.current = new IntersectionObserver(
+        stableIntersectionCallback,
+        {
+          threshold: 0.1,
+          rootMargin: '100px'
         }
-      },
-      {
-        threshold: 0.1,
-        rootMargin: '100px'
-      }
-    );
+      );
+    }
 
-    // Add a small delay to ensure DOM is fully rendered
-    const timeoutId = setTimeout(() => {
-      const sentinel = document.getElementById('scroll-sentinel');
-      if (sentinel) {
-        observer.observe(sentinel);
-      }
-    }, 100);
+    // Find and observe sentinel (no timeout needed - immediate observation)
+    const sentinel = document.getElementById('scroll-sentinel');
+    if (sentinel && observerRef.current) {
+      observerRef.current.observe(sentinel);
+    }
 
     return () => {
-      clearTimeout(timeoutId);
-      observer.disconnect();
+      // Only unobserve, don't disconnect (keep observer alive)
+      if (observerRef.current && sentinel) {
+        observerRef.current.unobserve(sentinel);
+      }
     };
-  }, [hasMore, loadingMore, loading, currentPage, loadMoreCompanies, companies.length]);
+  }, [companies.length, stableIntersectionCallback]); // Minimal dependencies
+
+  // Cleanup observer on unmount
+  useEffect(() => {
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+    };
+  }, []);
 
 
 
