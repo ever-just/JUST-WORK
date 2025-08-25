@@ -271,6 +271,52 @@ app.get('/api/companies/:name', async (req, res) => {
   }
 });
 
+// Get contacts for a specific company
+app.get('/api/companies/:name/contacts', async (req, res) => {
+  try {
+    const { name } = req.params;
+    const decodedName = decodeURIComponent(name);
+    
+    // First get the company to get its duns_number
+    const companyResult = await pool.query('SELECT duns_number FROM companies WHERE company_name = $1', [decodedName]);
+    
+    if (companyResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
+    
+    const dunsNumber = companyResult.rows[0].duns_number;
+    
+    // Get contacts for this company using duns_number
+    const contactsResult = await pool.query(
+      'SELECT * FROM contacts WHERE duns_number = $1 ORDER BY is_primary DESC, title_priority ASC',
+      [dunsNumber]
+    );
+    
+    const contacts = contactsResult.rows.map(contact => ({
+      firstName: contact.first_name || '',
+      lastName: contact.last_name || '',
+      fullName: contact.full_name || '',
+      title: contact.title || '',
+      emailFlag: contact.email_flag || '',
+      phoneFlag: contact.phone_flag || '',
+      isPrimary: contact.is_primary || false,
+      titlePriority: contact.title_priority || 15
+    }));
+    
+    res.json({
+      contacts,
+      totalContacts: contacts.length
+    });
+
+  } catch (error) {
+    console.error('Error fetching contacts:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch contacts',
+      message: error.message 
+    });
+  }
+});
+
 // Get unique industries for filter dropdown
 app.get('/api/industries', async (req, res) => {
   try {
