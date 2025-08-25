@@ -8,7 +8,6 @@ import { Company, IndustryOption } from './lib/types';
 import './App.css';
 
 interface HomePageProps {
-  companies: Company[];
   filteredCompanies: Company[];
   industries: IndustryOption[];
   loading: boolean;
@@ -39,6 +38,7 @@ function HomePage({ filteredCompanies, industries, loading, loadingMore, hasMore
           searchQuery={searchQuery}
           selectedIndustry={selectedIndustry}
         />
+        
         
         <CompanyGrid 
           companies={filteredCompanies}
@@ -127,7 +127,7 @@ function App() {
       setCurrentPage(nextPage);
       fetchCompanies(nextPage, false);
     }
-  }, [loadingMore, hasMore, currentPage, fetchCompanies]);
+  }, [loadingMore, hasMore, currentPage, fetchCompanies, loading]);
 
   useEffect(() => {
     const fetchIndustries = async () => {
@@ -173,8 +173,13 @@ function App() {
     setFilteredCompanies(filtered);
   }, [companies, searchQuery, selectedIndustry]);
 
-  // Intersection Observer for infinite scroll
+  // Intersection Observer for infinite scroll - only set up after initial data is loaded
   useEffect(() => {
+    // Don't set up observer until we have initial data and are not loading
+    if (loading || companies.length === 0) {
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         const target = entries[0];
@@ -188,17 +193,19 @@ function App() {
       }
     );
 
-    const sentinel = document.getElementById('scroll-sentinel');
-    if (sentinel) {
-      observer.observe(sentinel);
-    }
+    // Add a small delay to ensure DOM is fully rendered
+    const timeoutId = setTimeout(() => {
+      const sentinel = document.getElementById('scroll-sentinel');
+      if (sentinel) {
+        observer.observe(sentinel);
+      }
+    }, 100);
 
     return () => {
-      if (sentinel) {
-        observer.unobserve(sentinel);
-      }
+      clearTimeout(timeoutId);
+      observer.disconnect();
     };
-  }, [hasMore, loadingMore, loading, currentPage, loadMoreCompanies]);
+  }, [hasMore, loadingMore, loading, currentPage, loadMoreCompanies, companies.length]);
 
 
 
@@ -223,7 +230,6 @@ function App() {
             path="/"
             element={
               <HomePage
-                companies={companies}
                 filteredCompanies={filteredCompanies}
                 industries={industries}
                 loading={loading}

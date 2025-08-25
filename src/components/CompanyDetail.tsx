@@ -98,9 +98,6 @@ const CompanyDetail = ({ company }: CompanyDetailProps) => {
                             <div className="info-label">Employees:</div>
               <div className="info-value">{company.employees || company.employeesSite || 'N/A'}</div>
 
-              <div className="info-label">Annual Sales:</div>
-              <div className="info-value">{company.sales || 'N/A'}</div>
-
               {company.approxAnnualRevenue && (
                 <>
                   <div className="info-label">Approx Annual Revenue:</div>

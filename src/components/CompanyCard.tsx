@@ -1,5 +1,4 @@
 import { Company } from '../lib/types';
-import { formatSales } from '../lib/utils';
 
 interface CompanyCardProps {
   company: Company;
@@ -19,9 +18,6 @@ const CompanyCard = ({ company }: CompanyCardProps) => {
         </div>
         <div className="detail-item">
           <span className="detail-label">Employees:</span> {company.employees}
-        </div>
-        <div className="detail-item">
-          <span className="detail-label">Sales:</span> {formatSales(company.sales || '')}
         </div>
         {company.approxAnnualRevenue && (
           <div className="detail-item">
