@@ -45,7 +45,7 @@ function HomePage({ filteredCompanies, industries, loading, loadingMore, hasMore
           loading={loading}
           loadingMore={loadingMore}
           hasMore={hasMore}
-          totalCompanies={totalCompanies}
+          totalCompanies={filteredCompanies.length}
         />
       </main>
     </>
@@ -77,7 +77,7 @@ function App() {
   const [selectedIndustry, setSelectedIndustry] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const [totalCompanies, setTotalCompanies] = useState<number>(0);
+  const [, setTotalCompanies] = useState<number>(0);
 
   const fetchCompanies = async (page: number, reset: boolean = false) => {
     try {
@@ -87,19 +87,11 @@ function App() {
         setLoadingMore(true);
       }
 
-      // Build query parameters
+      // Build query parameters - no search/industry filters for API
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '50',
       });
-      
-      if (searchQuery) {
-        params.append('search', searchQuery);
-      }
-      
-      if (selectedIndustry) {
-        params.append('industry', selectedIndustry);
-      }
 
       const response = await fetch(`/api/companies?${params}`);
       if (!response.ok) {
@@ -111,10 +103,8 @@ function App() {
       
       if (reset) {
         setCompanies(newCompanies);
-        setFilteredCompanies(newCompanies);
       } else {
         setCompanies(prev => [...prev, ...newCompanies]);
-        setFilteredCompanies(prev => [...prev, ...newCompanies]);
       }
       
       setTotalCompanies(data.pagination?.total || 0);
@@ -124,7 +114,6 @@ function App() {
       console.error('Error fetching companies:', error);
       if (reset) {
         setCompanies([]);
-        setFilteredCompanies([]);
       }
     } finally {
       setLoading(false);
@@ -156,12 +145,28 @@ function App() {
     fetchIndustries();
   }, []);
 
+  // Client-side filtering effect
   useEffect(() => {
-    // Reset and fetch when search or industry changes
-    setCurrentPage(1);
-    setHasMore(true);
-    fetchCompanies(1, true);
-  }, [searchQuery, selectedIndustry]);
+    let filtered = [...companies];
+    
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(company => 
+        company.name.toLowerCase().includes(query) ||
+        company.description.toLowerCase().includes(query) ||
+        company.industry.toLowerCase().includes(query) ||
+        company.city.toLowerCase().includes(query)
+      );
+    }
+    
+    // Apply industry filter
+    if (selectedIndustry) {
+      filtered = filtered.filter(company => company.industry === selectedIndustry);
+    }
+    
+    setFilteredCompanies(filtered);
+  }, [companies, searchQuery, selectedIndustry]);
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
@@ -190,24 +195,7 @@ function App() {
     };
   }, [hasMore, loadingMore, loading, currentPage]);
 
-  useEffect(() => {
-    // Filter companies based on search query and selected industry
-    let filtered = [...companies];
-    
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(company => 
-        company.name.toLowerCase().includes(query) || 
-        (company.description && company.description.toLowerCase().includes(query))
-      );
-    }
-    
-    if (selectedIndustry) {
-      filtered = filtered.filter(company => company.industry === selectedIndustry);
-    }
-    
-    setFilteredCompanies(filtered);
-  }, [searchQuery, selectedIndustry, companies]);
+
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -215,17 +203,11 @@ function App() {
 
   const handleIndustryChange = (industry: string) => {
     setSelectedIndustry(industry);
-    setCurrentPage(1);
-    setHasMore(true);
-    fetchCompanies(1, true);
   };
 
   const handleClearFilters = () => {
     setSearchQuery('');
     setSelectedIndustry('');
-    setCurrentPage(1);
-    setHasMore(true);
-    fetchCompanies(1, true);
   };
 
   return (
@@ -242,7 +224,7 @@ function App() {
                 loading={loading}
                 loadingMore={loadingMore}
                 hasMore={hasMore}
-                totalCompanies={totalCompanies}
+                totalCompanies={filteredCompanies.length}
                 searchQuery={searchQuery}
                 selectedIndustry={selectedIndustry}
                 handleSearch={handleSearch}

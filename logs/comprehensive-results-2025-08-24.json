@@ -1,0 +1,43 @@
+{
+  "total": 5,
+  "processed": 5,
+  "found": 2,
+  "failed": 0,
+  "no_website": 3,
+  "urls": [
+    {
+      "company_id": "139bcf37-e9d7-41e4-8a3a-c901473b68c0",
+      "company_name": "110 Wyman, LLC",
+      "url": "https://www.110.com",
+      "confidence": 0.7,
+      "method": "domain_generation",
+      "tier": 2
+    },
+    {
+      "company_id": "69179930-0bb3-4293-97d5-2117fa310237",
+      "company_name": "15B OLD SOUTH RD SOLAR LLC",
+      "url": "https://www.15b.com",
+      "confidence": 0.7,
+      "method": "domain_generation",
+      "tier": 2
+    }
+  ],
+  "no_website_companies": [
+    {
+      "company_name": "100 WATTS ELECTRIC, LLC",
+      "attempts": 3,
+      "reason": "Comprehensive search completed - no website exists"
+    },
+    {
+      "company_name": "1721 PARTNERS, LLC",
+      "attempts": 3,
+      "reason": "Comprehensive search completed - no website exists"
+    },
+    {
+      "company_name": "1765 & 1769 CARROLL AVE L. L. C.",
+      "attempts": 3,
+      "reason": "Comprehensive search completed - no website exists"
+    }
+  ],
+  "errors": []
+}

@@ -9,10 +9,6 @@ import express from 'express';
 import cors from 'cors';
 import pg from 'pg';
 import dotenv from 'dotenv';
-import fs from 'fs';
-import path from 'path';
-import csv from 'csv-parser';
-import { fileURLToPath } from 'url';
 
 // Load environment variables
 dotenv.config();
@@ -21,123 +17,35 @@ const { Pool } = pg;
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Get current directory for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Data storage
-let companiesData = [];
-let contactsData = [];
-let industriesData = [];
-
-// Database configuration
+// Database configuration - Updated to match working automation script
 const dbConfig = {
   user: process.env.DB_USER || 'doadmin',
-  host: process.env.DB_HOST || 'ae5d107f-9867-42f1-be95-61fdbe5954cb-do-user-18665984-0.c.db.ondigitalocean.com',
+  host: process.env.DB_HOST || 'just-work-db-do-user-24253030-0.f.db.ondigitalocean.com',
   database: process.env.DB_NAME || 'justwork',
-  password: process.env.DB_PASSWORD || 'justwork2024',
+  password: process.env.DB_PASSWORD || 'REDACTED_PASSWORD',
   port: process.env.DB_PORT || 25060,
   ssl: {
     rejectUnauthorized: false
   }
 };
 
+
+
+// Initialize database connection
 const pool = new Pool(dbConfig);
 
-// Load data from cleaned CSV files
-async function loadCompaniesData() {
-  console.log('📊 Loading companies data from CSV...');
-  const companiesFile = path.join(__dirname, '../DATA/CLEANED_companies.csv');
-  
-  return new Promise((resolve, reject) => {
-    const companies = [];
-    
-    fs.createReadStream(companiesFile)
-      .pipe(csv())
-      .on('data', (row) => {
-        companies.push({
-          name: row.company_name,
-          tradestyle: row.tradestyle || '',
-          address: row.address_line_1 || '',
-          city: row.city || '',
-          state: row.state || '',
-          postalCode: row.postal_code || '',
-          phone: row.phone || '',
-          url: row.website || '',
-          sales: row.revenue_formatted || row.revenue_raw || '',
-          employees: row.employees_total || '',
-          description: row.business_description || '',
-          industry: row.industry || '',
-          isHeadquarters: row.is_headquarters === 'true',
-          ownership: row.ownership_type || '',
-          entity_type: row.entity_type || '',
-          revenue_numeric: parseFloat(row.revenue_numeric) || 0,
-          employeesSite: row.employees_single_site || '',
-          dunsNumber: row.duns_number,
-          contactCount: parseInt(row.contact_count) || 0,
-          primaryContactName: row.primary_contact_name || '',
-          primaryContactTitle: row.primary_contact_title || ''
-        });
-      })
-      .on('end', () => {
-        console.log(`✅ Loaded ${companies.length} companies`);
-        companiesData = companies;
-        resolve(companies);
-      })
-      .on('error', reject);
-  });
+// Test database connection on startup
+async function initializeDatabase() {
+  try {
+    await pool.query('SELECT 1');
+    console.log('✅ Connected to database with updated URLs');
+  } catch (error) {
+    console.error('❌ Database connection failed:', error.message);
+    process.exit(1);
+  }
 }
 
-async function loadContactsData() {
-  console.log('👥 Loading contacts data from CSV...');
-  const contactsFile = path.join(__dirname, '../DATA/CLEANED_contacts.csv');
-  
-  return new Promise((resolve, reject) => {
-    const contacts = [];
-    
-    fs.createReadStream(contactsFile)
-      .pipe(csv())
-      .on('data', (row) => {
-        contacts.push({
-          dunsNumber: row.duns_number,
-          firstName: row.first_name || '',
-          lastName: row.last_name || '',
-          fullName: row.full_name || '',
-          title: row.title || '',
-          emailFlag: row.email_flag || '',
-          phoneFlag: row.phone_flag || '',
-          isPrimary: row.is_primary === 'true',
-          titlePriority: parseInt(row.title_priority) || 15
-        });
-      })
-      .on('end', () => {
-        console.log(`✅ Loaded ${contacts.length} contacts`);
-        contactsData = contacts;
-        resolve(contacts);
-      })
-      .on('error', reject);
-  });
-}
 
-function generateIndustriesData() {
-  console.log('🏭 Generating industries list...');
-  const industries = new Set();
-  
-  companiesData.forEach(company => {
-    if (company.industry && company.industry.trim()) {
-      industries.add(company.industry.trim());
-    }
-  });
-  
-  industriesData = Array.from(industries)
-    .sort()
-    .map(industry => ({
-      value: industry,
-      label: industry
-    }));
-    
-  console.log(`✅ Generated ${industriesData.length} unique industries`);
-}
 
 // Sample data for demonstration (will be replaced with real database)
 const sampleCompanies = [
@@ -317,8 +225,8 @@ app.get('/api/companies', async (req, res) => {
     }
     
     const total = filteredCompanies.length;
-    const offset = (page - 1) * limit;
-    const paginatedCompanies = filteredCompanies.slice(offset, offset + parseInt(limit));
+    const companyOffset = (page - 1) * limit;
+    const paginatedCompanies = filteredCompanies.slice(companyOffset, companyOffset + parseInt(limit));
     
     res.json({
       companies: paginatedCompanies,
@@ -441,25 +349,21 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Endpoint not found' });
 });
 
-// Initialize data and start server
+// Initialize database and start server
 async function startServer() {
   try {
     console.log('🚀 Starting JUST-WORK API Server...');
     console.log('=====================================');
     
-    // Load data from CSV files
-    await loadCompaniesData();
-    await loadContactsData();
-    generateIndustriesData();
+    // Initialize database connection
+    await initializeDatabase();
     
     console.log('=====================================');
     
     // Start server
     app.listen(PORT, () => {
       console.log(`🚀 JUST-WORK API server running on port ${PORT}`);
-      console.log(`📊 Serving ${companiesData.length} real companies`);
-      console.log(`👥 Loaded ${contactsData.length} contacts`);
-      console.log(`🏭 Available industries: ${industriesData.length}`);
+      console.log(`📊 Serving companies with updated URLs from database`);
       console.log(`🌐 Health check: http://localhost:${PORT}/health`);
       console.log(`📊 API endpoints: http://localhost:${PORT}/api/companies`);
       console.log('=====================================');

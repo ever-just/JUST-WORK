@@ -1,0 +1,68 @@
+{
+  "total": 10,
+  "processed": 10,
+  "found": 4,
+  "failed": 6,
+  "urls": [
+    {
+      "company_id": "979075d9-9b27-4777-916d-fc1abe2287e2",
+      "company_name": "02 Investar LLC",
+      "url": "http://www.onwardinvestors.com/",
+      "confidence": 0.7,
+      "place_name": "Onward Investors, LLC"
+    },
+    {
+      "company_id": "cda9cbf8-ad15-48a8-a4e2-47699aea2a1c",
+      "company_name": "1029 BEAUTY BAR LLC",
+      "url": "https://www.1029beautybar.com/",
+      "confidence": 0.9,
+      "place_name": "1029 Beauty Bar"
+    },
+    {
+      "company_id": "78c228f1-5acf-4330-b092-74d4014914b7",
+      "company_name": "15B OLD SOUTH RD 2 SOLAR LLC",
+      "url": "http://mnsolarfarm.com/",
+      "confidence": 0.9,
+      "place_name": "Solar Farm, LLC"
+    },
+    {
+      "company_id": "3c63c3fe-8370-480e-9429-14d6d2538582",
+      "company_name": "1712 PROPERTIES LLC",
+      "url": "http://www.oaksproperties.com/",
+      "confidence": 0.9,
+      "place_name": "Oaks Properties LLC"
+    }
+  ],
+  "errors": [
+    {
+      "success": false,
+      "company": "100 WATTS ELECTRIC, LLC",
+      "reason": "No results: ZERO_RESULTS"
+    },
+    {
+      "success": false,
+      "company": "110 Wyman, LLC",
+      "reason": "No website in Google Places data"
+    },
+    {
+      "success": false,
+      "company": "15B OLD SOUTH RD SOLAR LLC",
+      "reason": "No results: ZERO_RESULTS"
+    },
+    {
+      "success": false,
+      "company": "1721 PARTNERS, LLC",
+      "reason": "No results: ZERO_RESULTS"
+    },
+    {
+      "success": false,
+      "company": "1765 & 1769 CARROLL AVE L. L. C.",
+      "reason": "No website in Google Places data"
+    },
+    {
+      "success": false,
+      "company": "1944 Rice Street LLC",
+      "reason": "No website in Google Places data"
+    }
+  ]
+}
