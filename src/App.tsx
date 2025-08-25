@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
 import SearchBar from './components/SearchBar';
 import CompanyGrid from './components/CompanyGrid';
@@ -79,7 +79,7 @@ function App() {
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [, setTotalCompanies] = useState<number>(0);
 
-  const fetchCompanies = async (page: number, reset: boolean = false) => {
+  const fetchCompanies = useCallback(async (page: number, reset: boolean = false) => {
     try {
       if (reset) {
         setLoading(true);
@@ -119,15 +119,15 @@ function App() {
       setLoading(false);
       setLoadingMore(false);
     }
-  };
+  }, []);
 
-  const loadMoreCompanies = () => {
+  const loadMoreCompanies = useCallback(() => {
     if (!loadingMore && hasMore) {
       const nextPage = currentPage + 1;
       setCurrentPage(nextPage);
       fetchCompanies(nextPage, false);
     }
-  };
+  }, [loadingMore, hasMore, currentPage, fetchCompanies]);
 
   useEffect(() => {
     const fetchIndustries = async () => {
@@ -198,7 +198,7 @@ function App() {
         observer.unobserve(sentinel);
       }
     };
-  }, [hasMore, loadingMore, loading, currentPage]);
+  }, [hasMore, loadingMore, loading, currentPage, loadMoreCompanies]);
 
 
 
