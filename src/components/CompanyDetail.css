@@ -7,12 +7,13 @@
 /* Header Styles */
 .header {
   margin-bottom: 2rem;
+  position: relative;
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 1rem;
   width: 100%;
 }
@@ -21,6 +22,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  justify-content: center;
   flex: 1;
 }
 
@@ -56,6 +58,8 @@
 
 .back-button {
   flex-shrink: 0;
+  position: absolute;
+  left: 0;
 }
 
 .back-button {

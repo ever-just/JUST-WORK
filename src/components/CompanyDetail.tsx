@@ -101,10 +101,6 @@ const CompanyDetail = ({ company }: CompanyDetailProps) => {
               <h1>{company.name}</h1>
             </div>
           </div>
-          <div className="header-badges">
-            {company.isHeadquarters && <span className="badge headquarters-badge">Headquarters</span>}
-            {company.ownership && <span className="badge ownership-badge">{company.ownership}</span>}
-          </div>
         </div>
       </header>
 
