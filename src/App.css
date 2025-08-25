@@ -293,30 +293,33 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 2px; /* Slight adjustment for better visual alignment */
 }
 
 .company-logo-large {
   width: 64px;
   height: 64px;
-  border-radius: 8px;
+  border-radius: 10px;
   object-fit: contain;
   background-color: #f8f9fa;
   border: 1px solid var(--border-color);
-  padding: 4px;
+  padding: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .company-logo-fallback-large {
   width: 64px;
   height: 64px;
-  border-radius: 8px;
+  border-radius: 10px;
   background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 600;
   text-transform: uppercase;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .company-title-section {
