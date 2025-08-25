@@ -38,6 +38,11 @@ const CompanyGrid = ({ companies, loading, loadingMore = false, hasMore = false,
               <div className="detail-item">
                 <span className="detail-label">Sales:</span> {company.sales}
               </div>
+              {company.approxAnnualRevenue && (
+                <div className="detail-item">
+                  <span className="detail-label">Approx Annual Revenue:</span> {company.approxAnnualRevenue}
+                </div>
+              )}
             </div>
             <div className="company-description">
               {company.description && company.description.length > 300 
