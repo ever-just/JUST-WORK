@@ -293,7 +293,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 2px; /* Slight adjustment for better visual alignment */
 }
 
 .company-logo-large {
