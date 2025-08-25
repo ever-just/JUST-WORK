@@ -77,7 +77,7 @@ function App() {
   const [selectedIndustry, setSelectedIndustry] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const [, setTotalCompanies] = useState<number>(0);
+  const [totalCompanies, setTotalCompanies] = useState<number>(0);
 
   const fetchCompanies = useCallback(async (page: number, reset: boolean = false) => {
     try {
@@ -229,7 +229,7 @@ function App() {
                 loading={loading}
                 loadingMore={loadingMore}
                 hasMore={hasMore}
-                totalCompanies={filteredCompanies.length}
+                totalCompanies={totalCompanies}
                 searchQuery={searchQuery}
                 selectedIndustry={selectedIndustry}
                 handleSearch={handleSearch}
