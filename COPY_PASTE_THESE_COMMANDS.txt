@@ -1,0 +1,30 @@
+COPY AND PASTE THESE COMMANDS ONE BY ONE:
+
+1. First, commit the fix to remove the password:
+   git add server/index.js
+   git commit -m "Remove hardcoded password from server/index.js"
+
+2. Create a new branch from origin/main:
+   git checkout -b clean-deploy origin/main
+
+3. Copy all the files from main branch (you're already on clean-deploy):
+   git checkout main -- src/
+   git checkout main -- server/index.js
+   git checkout main -- scripts/
+   git add -A
+   git commit -m "Add all logo features and layout improvements"
+
+4. Force push to main:
+   git push origin clean-deploy:main --force
+
+5. Deploy to production:
+   ./scripts/deploy-to-server.sh
+
+Alternative if cherry-pick fails:
+================================
+git checkout -b fresh-main origin/main
+git checkout main -- src/ server/index.js scripts/
+git add -A
+git commit -m "Add all logo features and fixes"
+git push origin fresh-main:main --force
+./scripts/deploy-to-server.sh

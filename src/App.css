@@ -181,6 +181,8 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 2rem;
+  /* Ensure all cards have the same height */
+  align-items: stretch;
 }
 
 /* Infinite scroll styles */
@@ -229,15 +231,22 @@ body {
   margin-top: 24px;
 }
 
+
+
 /* Company card styles */
 .company-card {
   background-color: var(--card-bg);
   border-radius: 0.5rem;
   box-shadow: var(--card-shadow);
   padding: 1.5rem;
+  padding-right: 4rem; /* Add extra right padding for logo space */
   display: flex;
   flex-direction: column;
   transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  /* Ensure card stretches to fill grid cell height */
+  height: 100%;
+  min-height: 280px; /* Set minimum height for consistency */
 }
 
 .company-card:hover {
@@ -328,8 +337,51 @@ body {
   align-items: flex-start;
 }
 
+/* Top-right logos for home page company cards */
+.company-logo-container-top-right {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.company-logo-top-right {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: contain;
+  background-color: #f8f9fa;
+  border: 1px solid var(--border-color);
+  padding: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.company-logo-fallback-top-right {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
 /* Responsive logo adjustments */
 @media (max-width: 768px) {
+  .company-card {
+    padding-right: 3rem; /* Reduced right padding for mobile */
+  }
+  
   .company-header {
     gap: 0.75rem;
   }
@@ -369,6 +421,28 @@ body {
     border-radius: 6px;
     font-size: 1.25rem;
   }
+  
+  /* Mobile adjustments for top-right logos */
+  .company-logo-container-top-right {
+    width: 32px;
+    height: 32px;
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+  
+  .company-logo-top-right {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    padding: 3px;
+  }
+  
+  .company-logo-fallback-top-right {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
 }
 
 .company-name {
@@ -395,6 +469,11 @@ body {
 
 .company-details {
   margin-bottom: 1rem;
+  /* Ensure details section expands to fill available space */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .detail-item {

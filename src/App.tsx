@@ -180,11 +180,11 @@ function App() {
   // Stable refs for IntersectionObserver to prevent recreation issues
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef(loadMoreCompanies);
-  const stateRef = useRef({ hasMore, loadingMore, loading });
+  const stateRef = useRef({ hasMore, loadingMore, loading, currentPage });
 
   // Keep refs current
   loadMoreRef.current = loadMoreCompanies;
-  stateRef.current = { hasMore, loadingMore, loading };
+  stateRef.current = { hasMore, loadingMore, loading, currentPage };
 
   // Stable intersection callback that doesn't cause observer recreation
   const stableIntersectionCallback = useCallback((entries: IntersectionObserverEntry[]) => {

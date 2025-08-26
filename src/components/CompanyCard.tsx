@@ -1,14 +1,15 @@
 import { Company } from '../lib/types';
-import { memo } from 'react';
 import { useState } from 'react';
 
 interface CompanyCardProps {
   company: Company;
 }
 
-const CompanyCard = memo(({ company }: CompanyCardProps) => {
+const CompanyCard = ({ company }: CompanyCardProps) => {
   const [logoError, setLogoError] = useState(false);
   const [logoLoading, setLogoLoading] = useState(true);
+  
+
 
   const handleLogoError = () => {
     setLogoError(true);
@@ -21,23 +22,23 @@ const CompanyCard = memo(({ company }: CompanyCardProps) => {
 
   return (
     <div className="company-card">
+      <div className="company-logo-container-top-right">
+        {company.favicon_url && company.favicon_url.trim() !== '' && !logoError ? (
+          <img 
+            src={company.favicon_url}
+            alt={`${company.name} logo`}
+            className="company-logo-top-right"
+            onError={handleLogoError}
+            onLoad={handleLogoLoad}
+            style={{ display: logoLoading ? 'none' : 'block' }}
+          />
+        ) : (
+          <div className="company-logo-fallback-top-right">
+            {company.name.charAt(0).toUpperCase()}
+          </div>
+        )}
+      </div>
       <div className="company-header">
-        <div className="company-logo-container">
-          {company.favicon_url && !logoError ? (
-            <img 
-              src={company.favicon_url}
-              alt={`${company.name} logo`}
-              className="company-logo"
-              onError={handleLogoError}
-              onLoad={handleLogoLoad}
-              style={{ display: logoLoading ? 'none' : 'block' }}
-            />
-          ) : (
-            <div className="company-logo-fallback">
-              {company.name.charAt(0).toUpperCase()}
-            </div>
-          )}
-        </div>
         <div className="company-title-section">
           <h2 className="company-name">{company.name}</h2>
           {company.isHeadquarters && <span className="hq-badge">HQ</span>}
@@ -67,6 +68,6 @@ const CompanyCard = memo(({ company }: CompanyCardProps) => {
       </div>
     </div>
   );
-});
+};
 
 export default CompanyCard;

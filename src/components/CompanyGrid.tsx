@@ -1,5 +1,6 @@
 import { Company } from '../lib/types';
 import { Link } from 'react-router-dom';
+import CompanyCard from './CompanyCard';
 
 interface CompanyGridProps {
   companies: Company[];
@@ -22,39 +23,13 @@ const CompanyGrid = ({ companies, loading, loadingMore = false, hasMore = false,
     <div className="company-grid-container">
       <div className="company-grid">
         {companies.map((company, index) => (
-          <div key={`${company.name}-${index}`} className="company-card">
-            <div className="company-header">
-              <h2 className="company-name">{company.name}</h2>
-              {company.isHeadquarters && <span className="hq-badge">HQ</span>}
-            </div>
-            <div className="company-industry">{company.industry}</div>
-            <div className="company-details">
-              <div className="detail-item">
-                <span className="detail-label">Location:</span> {company.city}, {company.state}
-              </div>
-              <div className="detail-item">
-                <span className="detail-label">Employees:</span> {company.employees}
-              </div>
-              {company.approxAnnualRevenue && (
-                <div className="detail-item">
-                  <span className="detail-label">Approx Annual Revenue:</span> {company.approxAnnualRevenue}
-                </div>
-              )}
-            </div>
-            <div className="company-description">
-              {company.description && company.description.length > 300 
-                ? `${company.description.substring(0, 300)}...` 
-                : company.description}
-            </div>
-            <div className="view-details">
-              <Link 
-                to={`/company/${encodeURIComponent(company.name)}`} 
-                className="view-details-link"
-              >
-                View Details →
-              </Link>
-            </div>
-          </div>
+          <Link 
+            key={`${company.name}-${index}`}
+            to={`/company/${encodeURIComponent(company.name)}`}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            <CompanyCard company={company} />
+          </Link>
         ))}
       </div>
 
@@ -68,7 +43,7 @@ const CompanyGrid = ({ companies, loading, loadingMore = false, hasMore = false,
             </div>
           ) : (
             <div className="scroll-hint">
-              Scroll down to load more companies
+              📜 Keep scrolling to load more companies (200 per page)
             </div>
           )}
         </div>
