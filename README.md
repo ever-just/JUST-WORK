@@ -1,3 +1,10 @@
+> ## ⛔️ ARCHIVED — not maintained
+>
+> This repository is read-only. It is kept for reference and history.
+> JUST-WORK business directory and opportunity tracker. Not maintained; just-work.app is a parked domain.
+>
+> Archived 2026-09-04.
+
 # JUST-WORK.app
 
 **Comprehensive business directory and opportunity tracking platform for mid-market Minnesota companies ($100K - $100M ARR)**
