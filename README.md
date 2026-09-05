@@ -1,16 +1,12 @@
-> ## ⛔️ ARCHIVED — not maintained
->
-> This repository is read-only. It is kept for reference and history.
->
-> JUST-WORK business directory and opportunity tracker. Not maintained; just-work.app is a parked domain.
->
-> Archived 2026-09-04.
+> [!WARNING]
+> ## ⛔️ ARCHIVED — no longer maintained
+> This repository is read-only and kept for reference and history. JUST-WORK business directory and opportunity tracker. Not maintained; just-work.app is a parked domain. Archived 2026-09-04.
 
 # JUST-WORK
 
 **What it was:** JUST-WORK business directory and opportunity tracker. Not maintained; just-work.app is a parked domain.
 
-**Status:** archived 2026-09-04 · last push 2026-09-04 · TypeScript · no releases, no support. 
+**Why it is archived:** no longer maintained — archived because the work either shipped elsewhere or stopped; superseded by the live products listed at github.com/ever-just. Use the successor instead. Last push 2026-09-05 · TypeScript · no releases, no support.
 
 ## Structure and layout
 
